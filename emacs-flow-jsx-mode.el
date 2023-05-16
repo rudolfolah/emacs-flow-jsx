@@ -1,18 +1,18 @@
 ;;; emacs-flow-jsx-mode.el --- Major mode for Flow/JSX
 
-;; Copyright (C) 2016 Rudolf Olah
+;; Copyright (C) 2023 Rudolf Olah
 
-;; Author: Rudolf Olah <omouse@gmail.com>
+;; Author: Rudolf Olah <rudolf.olah.to@gmail.com>
 
 ;; This file is not part of GNU Emacs.
 
-;; URL: https://gitlab.com/rudolfo/emacs-flow-jsx
+;; URL: https://github.com/rudolfolah/emacs-flow-jsx
 ;; Keywords: languages javascript react flow
 
-;;;; Commentary:
+;;; Commentary:
 
 ;; Emacs Flow JSX Mode is based on Java mode. It adds keyword
-;; highlighting for flow type annotiations and react's JSX syntax.
+;; highlighting for flow type annotations and react's JSX syntax.
 
 ;;; License:
 
@@ -35,7 +35,7 @@
   "Major mode for Flow and JSX (JavaScript)."
   :prefix "flow-jsx-"
   :group 'languages
-  :link '(url-link :tag "Gitlab" "https://gitlab.com/rudolfo/emacs-flow-jsx")
+  :link '(url-link :tag "GitHub" "https://github.com/rudolfolah/emacs-flow-jsx")
   :link '(emacs-commentary-link :tag "Commentary" "flow-jsx-mode"))
 
 (defface flow-jsx-jsx
@@ -47,85 +47,58 @@
   "Face for Flow Type Annotations syntax.")
 
 (defun flow-jsx-buffer-uses-flow-p (buffer)
-  "Returns T if the `BUFFER' is using the Flow type
-checker. Otherwise returns NIL."
-  (save-excursion
+  "Return T if BUFFER is using the Flow type checker.  Otherwise return NIL."
+  (with-current-buffer buffer
     (goto-char (point-min))
-    (not (null (search-forward "@flow" nil t)))))
+    (search-forward "@flow" nil t)))
 
-;; Using it for the current buffer:
-;;   (flow-jsx-buffer-uses-flow-p (current-buffer))
+(defvar flow-jsx-keyword-list
+  '("const" "import" "from" "type" "export" "export default" "class" "extends" "this" "if" "else" "for" "while" "let" "=>" "return" "function" "static")
+  "List of Flow/JSX keywords.")
 
-(setq flow-jsx-keyword-list
-      '("const"
-        "import"
-        "from"
-        "type"
-        "export"
-        "export default"
-        "class"
-        "extends"
-        "this"
-        "if"
-        "else"
-        "for"
-        "while"
-        "let"
-        "=>"
-        "return"
-        "function"
-        "static"
-        ))
-
-(setq flow-jsx-font-lock-list
-      '(
-        ("import {?\\(.+?\\)}? from" 1 font-lock-variable-name-face)
-        ("import .* from \\(.*\\);" 1 font-lock-string-face)
-        ("import \\('.+'\\);" 1 font-lock-string-face)
-        ("undefined" 0 font-lock-constant-face)
-        ("null" 0 font-lock-constant-face)
-        ("window" 0 font-lock-constant-face)
-        ("false" 0 font-lock-constant-face)
-        ("true" 0 font-lock-constant-face)
-        ("const \\(.+?\\) =" 1 font-lock-variable-name-face)
-        ("type \\(.+?\\) =" 1 font-lock-variable-name-face)
-        ;; Strings
-        ("`.*`" 0 font-lock-string-face)
-        ("'.*'" 0 font-lock-string-face)
-        ("\".*\"" 0 font-lock-string-face)
-        ;; Classes
-        ("class" (0 font-lock-keyword-face)
-         ("\\(.*\\) extends" nil nil (1 font-lock-variable-name-face))
-         )
-        ;; Methods
-        ("\\(.*\\)(.*{" 1 font-lock-variable-name-face)
-        ;; Flow Type Annotations
-        ("(.*:\\W*\\(.*\\))" 1 'flow-jsx-flow-type-annotation)
-        ("[[:alpha:]][[:alnum:]]+<.+?>" 0 'flow-jsx-flow-type-annotation)
-        ("("
-         (": \\(\\?\\w+\\)" nil nil 1 'flow-jsx-flow-type-annotation)
-         (": \\({.*}\\)" nil nil 1 'flow-jsx-flow-type-annotation)
-         (": \\([[:alpha:]][[:alnum:]]+\\)[,;]" nil nil 1 'flow-jsx-flow-type-annotation)
-         ("):\\s*\\(.*\\) {" nil nil 1 'flow-jsx-flow-type-annotation)
-         )
-        ;; JSX
-        ("\\S+<\\w+" (0 'flow-jsx-jsx)
-         (">" nil nil (0 'flow-jsx-jsx))
-         )
-        ("/>" 0 'flow-jsx-jsx)
-        ("</\\w+>" 0 'flow-jsx-jsx)
-        ("\\(\\w+\\)="  1 'flow-jsx-jsx)
-        ))
+(defvar flow-jsx-font-lock-list
+  '(("import {\\s*\\(.+?\\)\\s*} from" 1 font-lock-variable-name-face)
+    ("import .* from \\(.*\\);" 1 font-lock-string-face)
+    ("import \\('.+'\\);" 1 font-lock-string-face)
+    ("undefined" 0 font-lock-constant-face)
+    ("null" 0 font-lock-constant-face)
+    ("window" 0 font-lock-constant-face)
+    ("false" 0 font-lock-constant-face)
+    ("true" 0 font-lock-constant-face)
+    ("const \\(.+?\\) =" 1 font-lock-variable-name-face)
+    ("type \\(.+?\\) =" 1 font-lock-variable-name-face)
+    ;; Strings
+    ("`.*`" 0 font-lock-string-face)
+    ("'.*'" 0 font-lock-string-face)
+    ("\".*\"" 0 font-lock-string-face)
+    ;; Classes
+    ("class" (0 font-lock-keyword-face)
+     ("\\(.*\\) extends" nil nil (1 font-lock-variable-name-face)))
+    ;; Methods
+    ("\\(.*\\)(.*{" 1 font-lock-variable-name-face)
+    ;; Flow Type Annotations
+    ("(.*:\\W*\\(.*\\))" 1 'flow-jsx-flow-type-annotation)
+    ("[[:alpha:]][[:alnum:]]+<.+?>" 0 'flow-jsx-flow-type-annotation)
+    ("("
+     (": \\(\\?\\w+\\)" nil nil 1 'flow-jsx-flow-type-annotation)
+     (": \\({.*}\\)" nil nil 1 'flow-jsx-flow-type-annotation)
+     (": \\([[:alpha:]][[:alnum:]]+\\)[,;]" nil nil 1 'flow-jsx-flow-type-annotation)
+     ("):\\s*\\(.*\\) {" nil nil 1 'flow-jsx-flow-type-annotation))
+    ;; JSX
+    ("\\S+<\\w+" (0 'flow-jsx-jsx)
+     (">" nil nil (0 'flow-jsx-jsx)))
+    ("/>" 0 'flow-jsx-jsx)
+    ("</\\w+>" 0 'flow-jsx-jsx)
+    ("\\(\\w+\\)="  1 'flow-jsx-jsx))
+  "List of regular expressions for Flow/JSX syntax highlighting.")
 
 ;;;###autoload
-(define-generic-mode flow-jsx-mode
-  '(("//" . nil)
-    ("/*" . "*/"))
-  flow-jsx-keyword-list
-  flow-jsx-font-lock-list
-  '()
-  '()
-  "Major mode for Flow and JSX (JavaScript).")
+(define-derived-mode flow-jsx-mode prog-mode "Flow/JSX"
+  "Major mode for editing Flow/JSX."
+  (setq font-lock-defaults
+        '(flow-jsx-font-lock-list
+          nil nil nil nil
+          (font-lock-syntactic-face-function . flow-jsx-syntactic-face-function))))
 
 (provide 'flow-jsx-mode)
 ;;; emacs-flow-jsx-mode.el ends here

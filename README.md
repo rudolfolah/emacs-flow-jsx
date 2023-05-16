@@ -23,4 +23,4 @@ the react JSX syntax.
 
 Licensed under the GNU GPL version 3 or later, see [LICENSE](./LICENSE)
 
-Copyright (C) 2016 Rudolf Olah
+Copyright (C) 2023 Rudolf Olah
