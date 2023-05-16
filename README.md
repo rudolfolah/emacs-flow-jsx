@@ -15,9 +15,25 @@ Add a hook for javascript:
 
     ;; TODO
 
-As you can use, there are functions for checking whether a file uses
-the flow type annotations or the flow type checker and whether it uses
-the react JSX syntax.
+There are functions for checking whether a file uses the flow type annotations or the flow type checker and whether it uses the react JSX syntax.
+
+## Testing
+
+The provided tests for `emacs-flow-jsx-mode` are basic and only cover a small part of the mode's functionality.
+
+To run the tests, follow the steps below:
+
+### Running Tests within Emacs
+
+1. Open Emacs.
+2. Run the command `M-x ert`.
+3. When prompted, enter `t` to run all tests.
+
+### Running Tests from the Command Line
+
+1. Open a terminal.
+2. Navigate to the package directory
+3. Run the following command: `emacs -batch -l ert -l tests.el -f ert-run-tests-batch-and-exit`
 
 # License and Copyright
 
